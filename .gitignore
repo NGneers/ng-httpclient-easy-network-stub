@@ -1,0 +1,5 @@
+node_modules/**
+lib/**
+playwright-report
+test/junit.xml
+test/output
