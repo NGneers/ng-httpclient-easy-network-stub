@@ -8,19 +8,32 @@ export const HTTP_CLIENT_EASY_NETWORK_STUBS = new InjectionToken<HttpClientEasyN
 
 @NgModule()
 export class HttpClientEasyNetworkStubModule {
-  static forRoot(config: HttpClientEasyNetworkStubConfig): ModuleWithProviders<HttpClientEasyNetworkStubModule> {
+  static forRoot(
+    config: HttpClientEasyNetworkStubConfig | HttpClientEasyNetworkStubConfig[]
+  ): ModuleWithProviders<HttpClientEasyNetworkStubModule> {
     const interceptor = new HttpClientEasyNetworkStubInterceptor();
-    const stub = new HttpClientEasyNetworkStub(config.urlMatch);
-    stub.init(interceptor);
-    config.stubFactory?.(stub);
 
+    const configs = config instanceof Array ? config : [config];
     const providers: Array<Provider | EnvironmentProviders> = [];
-    if (config.stubInjectionToken) {
+
+    configs.forEach(stubConfig => {
+      const stub = new HttpClientEasyNetworkStub(stubConfig.urlMatch);
+      stub.init(interceptor);
+      stubConfig.stubFactory?.(stub);
+
       providers.push({
-        provide: config.stubInjectionToken,
+        provide: HTTP_CLIENT_EASY_NETWORK_STUBS,
+        multi: true,
         useValue: stub
       });
-    }
+
+      if (stubConfig.stubInjectionToken) {
+        providers.push({
+          provide: stubConfig.stubInjectionToken,
+          useValue: stub
+        });
+      }
+    });
 
     return {
       ngModule: HttpClientEasyNetworkStubModule,
@@ -29,11 +42,6 @@ export class HttpClientEasyNetworkStubModule {
           provide: HTTP_INTERCEPTORS,
           multi: true,
           useValue: interceptor
-        },
-        {
-          provide: HTTP_CLIENT_EASY_NETWORK_STUBS,
-          multi: true,
-          useValue: stub
         },
         ...providers
       ]
