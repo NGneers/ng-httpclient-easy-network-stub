@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "CommonJS",
+    "target": "ES2022",
+    "module": "ES2022",
     "baseUrl": "./",
-    "lib": ["ES2020"],
+    "lib": ["ES2022"],
     "declaration": true,
     "outDir": "lib",
     "rootDir": ".",
@@ -18,5 +18,11 @@
     "skipLibCheck": true,
     "newLine": "lf"
   },
-  "exclude": ["lib"]
+  "exclude": ["lib"],
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
 }

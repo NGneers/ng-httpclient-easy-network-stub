@@ -7,6 +7,17 @@ export class HttpClientEasyNetworkStub extends EasyNetworkStub {
   }
 
   public init(interceptor: HttpClientEasyNetworkStubInterceptor) {
-    // TODO: Register handler in interceptor
+    this.initInternal({
+      failer: error => {
+        if (error instanceof Error) {
+          throw error;
+        } else {
+          throw new Error(error);
+        }
+      },
+      interceptor: (baseUrl, handler) => {
+        interceptor.addHandler(baseUrl, handler);
+      }
+    });
   }
 }

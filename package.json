@@ -1,7 +1,6 @@
 {
   "name": "ng-httpclient-easy-network-stub",
   "version": "1.0.0",
-  "main": "lib/index.js",
   "repository": "https://github.com/MaSch0212/ng-httpclient-easy-network-stub.git",
   "author": {
     "name": "Marc Schmidt (MaSch0212)",
@@ -10,15 +9,19 @@
   "license": "MIT",
   "prettier": "@awdware/prettier-config",
   "scripts": {
-    "clean": "pnpm rimraf lib",
-    "build": "pnpm run clean && pnpm tsc"
+    "build": "pnpm ng build --configuration production"
   },
   "dependencies": {
-    "easy-network-stub": "^6.0.0"
+    "easy-network-stub": "^6.0.0",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "^15.2.0",
+    "@angular/cli": "^15.2.0",
+    "@angular/compiler-cli": "^15.2.0",
     "@awdware/prettier-config": "^0.0.2",
     "@types/node": "^16.0.0",
+    "ng-packagr": "^15.2.2",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "ts-node": "^10.1.0",

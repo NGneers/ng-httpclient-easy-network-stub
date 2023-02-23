@@ -3,3 +3,5 @@ lib/**
 playwright-report
 test/junit.xml
 test/output
+.angular/
+dist/
