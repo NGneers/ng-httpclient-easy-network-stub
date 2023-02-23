@@ -1,7 +1,8 @@
 [![npm](https://img.shields.io/npm/v/ng-httpclient-easy-network-stub?color=%2300d26a&style=for-the-badge)](https://www.npmjs.com/package/playwright-easy-network-stub)
 [![CI](https://img.shields.io/github/actions/workflow/status/MaSch0212/ng-httpclient-easy-network-stub/build.yml?branch=main&style=for-the-badge)](https://github.com/LoaderB0T/playwright-easy-network-stub/actions/workflows/build.yml)
 [![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/MaSch0212_ng-httpclient-easy-network-stub?server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge)](https://sonarcloud.io/summary/new_code?id=MaSch0212_ng-httpclient-easy-network-stub)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/ng-httpclient-easy-network-stub?color=%23FF006F&label=Bundle%20Size&style=for-the-badge)](https://bundlephobia.com/package/ng-httpclient-easy-network-stub)
+
+<!--[![bundle size](https://img.shields.io/bundlephobia/minzip/ng-httpclient-easy-network-stub?color=%23FF006F&label=Bundle%20Size&style=for-the-badge)](https://bundlephobia.com/package/ng-httpclient-easy-network-stub)-->
 
 # ng-httpclient-easy-network-stub
 
@@ -36,60 +37,132 @@ The primary use case for this package is to create a mock server for your applic
 
 ## Usage Example 🚀
 
-TODO
+### Module Import
 
-<!-- ```typescript
-const posts = [0, 1, 2, 3, 4, 5].map(x => ({ postId: x, text: `test${x}` }));
+```typescript
+import { NgModule } from '@angular/core';
+import { HttpClientEasyNetworkStubModule } from 'ng-httpclient-easy-network-stub';
+import { configureStub } from './configure-stub';
 
-const blogStub = new PlaywrightEasyNetworkStub(/MyServer\/api\/Blog/);
+@NgModule({
+  imports: [
+    HttpClientEasyNetworkStubModule.forRoot({
+      urlMatch: /MyServer\/api\/Blog/,
+      stubFactory: configureStub
+    })
+  ]
+})
+export class SingleStubModule {}
+```
 
-blogStub.init();
+### Stub configuration
 
-blogStub.stub('GET', 'posts', () => {
-  return posts;
-});
+```typescript
+import { HttpClientEasyNetworkStub } from 'ng-httpclient-easy-network-stub';
 
-// Match Example: GET: /MyServer/api/Blog/posts/123
-blogStub.stub('GET', 'posts/{id:number}', ({ params }) => {
-  return posts.find(x => x.postId === params.id);
-});
+export const configureStub = (blogStub: HttpClientEasyNetworkStub) => {
+  const posts = [0, 1, 2, 3, 4, 5].map(x => ({ postId: x, text: `test${x}` }));
 
-// Match Example: POST: /MyServer/api/post
-blogStub.stub('POST', 'posts', ({ body, params }) => {
-  posts.push({ postId: body.postId, text: body.text });
-});
+  blogStub.stub('GET', 'posts', () => {
+    return posts;
+  });
 
-// Match Example: POST: /MyServer/api/Blog/test/true?query=myValue&secondQuery=myOtherValue
-// Note: The order of the query parameters is not important
-blogStub.stub('POST', 'test/{something:boolean}?{query:string}&{secondQuery:number}', ({ body, params }) => {
-  console.log(params.something);
-  console.log(params.query);
-  console.log(params.secondQuery);
-  console.log(body);
-});
+  // Match Example: GET: /MyServer/api/Blog/posts/123
+  blogStub.stub('GET', 'posts/{id:number}', ({ params }) => {
+    return posts.find(x => x.postId === params.id);
+  });
 
-// Here we use the stub2<>() method to create a stub with a typed body
-blogStub.stub2<MyRequest>()('POST', 'test', ({ body }) => {
-  console.log(body.myValue);
-});
+  // Match Example: POST: /MyServer/api/post
+  blogStub.stub('POST', 'posts', ({ body, params }) => {
+    posts.push({ postId: body.postId, text: body.text });
+  });
 
-// You can mark query params as optional with a '?'
-// Match Example: GET: /MyServer/api/Blog/test
-// Match Example: GET: /MyServer/api/Blog/test?refresh=true
-blogStub.stub('GET', 'test?{refresh?:boolean}', ({ body, params }) => {
-  if (params.refresh) {
-    console.log('Refreshing');
+  // Match Example: POST: /MyServer/api/Blog/test/true?query=myValue&secondQuery=myOtherValue
+  // Note: The order of the query parameters is not important
+  blogStub.stub('POST', 'test/{something:boolean}?{query:string}&{secondQuery:number}', ({ body, params }) => {
+    console.log(params.something);
+    console.log(params.query);
+    console.log(params.secondQuery);
+    console.log(body);
+  });
+
+  // Here we use the stub2<>() method to create a stub with a typed body
+  blogStub.stub2<MyRequest>()('POST', 'test', ({ body }) => {
+    console.log(body.myValue);
+  });
+
+  // You can mark query params as optional with a '?'
+  // Match Example: GET: /MyServer/api/Blog/test
+  // Match Example: GET: /MyServer/api/Blog/test?refresh=true
+  blogStub.stub('GET', 'test?{refresh?:boolean}', ({ body, params }) => {
+    if (params.refresh) {
+      console.log('Refreshing');
+    }
+    console.log(body.myValue);
+  });
+
+  // You can mark query params as arrays with a '[]'
+  // Match Example: GET: /MyServer/api/Blog/test?props=1
+  // Match Example: GET: /MyServer/api/Blog/test?props=1&props=2
+  blogStub.stub('GET', 'test?{props:number[]}', ({ params }) => {
+    params.props.forEach(x => console.log(x));
+  });
+};
+```
+
+### Configure multiple stubs
+
+```typescript
+import { NgModule } from '@angular/core';
+import { HttpClientEasyNetworkStubModule } from 'ng-httpclient-easy-network-stub';
+import { configureBlogStub } from './stubs';
+
+@NgModule({
+  imports: [
+    HttpClientEasyNetworkStubModule.forRoot([
+      {
+        urlMatch: /MyServer\/api\/Blog/,
+        stubFactory: configureBlogStub
+      },
+      {
+        urlMatch: /MyServer\/api\/Users/,
+        stubFactory: configureUsersStub
+      }
+    ])
+  ]
+})
+export class SingleStubModule {}
+```
+
+### Stub injection token
+
+You can also specify an injection token for each stub, so it can be injected into services or factory methods:
+
+```typescript
+import { Inject, Injectable, InjectionToken, NgModule } from '@angular/core';
+import { HttpClientEasyNetworkStubModule } from 'ng-httpclient-easy-network-stub';
+import { configureStub } from './configure-stub';
+
+export const BLOG_STUB = new InjectionToken<HttpClientEasyNetworkStub>('BLOG_STUB');
+
+@NgModule({
+  imports: [
+    HttpClientEasyNetworkStubModule.forRoot({
+      urlMatch: /MyServer\/api\/Blog/,
+      stubFactory: configureStub,
+      stubInjectionToken: BLOG_STUB
+    })
+  ]
+})
+export class SingleStubModule {}
+
+@Injectable({ providedIn: 'root' })
+export class MyService {
+  constructor(@Inject(BLOG_STUB) blogStub: HttpClientEasyNetworkStub) {
+    // [...]
   }
-  console.log(body.myValue);
-});
-
-// You can mark query params as arrays with a '[]'
-// Match Example: GET: /MyServer/api/Blog/test?props=1
-// Match Example: GET: /MyServer/api/Blog/test?props=1&props=2
-blogStub.stub('GET', 'test?{props:number[]}', ({ params }) => {
-  params.props.forEach(x => console.log(x));
-});
-``` -->
+}
+```
 
 ## Strongly typed api parameters:
 
