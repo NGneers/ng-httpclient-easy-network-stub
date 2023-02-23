@@ -6,13 +6,13 @@ import { transformHttpHeaders } from './helper/transform-http-headers';
 export class HttpClientEasyNetworkStubInterceptor implements HttpInterceptor {
   private readonly _interceptionHandlers: { baseUrl: string | RegExp; handler: (req: Request) => Promise<void> }[] = [];
 
-  public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  public intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const handler = this._interceptionHandlers.find(x => {
       return req.url.match(x.baseUrl);
     });
 
     if (handler) {
-      return new Observable<HttpEvent<any>>(subscriber => {
+      return new Observable<HttpEvent<unknown>>(subscriber => {
         handler.handler({
           destroy: () => subscriber.complete(),
           method: req.method as HttpMethod,
@@ -21,7 +21,7 @@ export class HttpClientEasyNetworkStubInterceptor implements HttpInterceptor {
           url: req.url,
           reply: r => {
             if (r.statusCode >= 200 && r.statusCode < 300) {
-              subscriber.next(new HttpResponse<any>({ status: r.statusCode, headers: r.headers, body: r.body }));
+              subscriber.next(new HttpResponse<unknown>({ status: r.statusCode, headers: r.headers, body: r.body }));
             } else {
               subscriber.error(new HttpErrorResponse({ status: r.statusCode, headers: r.headers, error: r.body }));
             }

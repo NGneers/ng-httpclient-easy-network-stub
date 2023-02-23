@@ -25,14 +25,14 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm run build
-      # - name: Lint
-      #   run: yarn run lint
-      # - name: Test
-      #   run: pnpm run test
-      #   env:
-      #     FORCE_COLOR: 1
-      # - name: Publish Unit Test Results
-      #   uses: EnricoMi/publish-unit-test-result-action@v1
-      #   if: always()
-      #   with:
-      #     files: test/output/junit/junit.xml
+      - name: Lint
+        run: pnpm run lint
+      - name: Test
+        run: pnpm run test
+        env:
+          FORCE_COLOR: 1
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: junit.xml
