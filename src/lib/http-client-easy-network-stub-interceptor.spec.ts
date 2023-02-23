@@ -1,7 +1,6 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Request } from 'easy-network-stub';
-import { EmptyError, lastValueFrom, Observable, of } from 'rxjs';
-import { transformHttpHeaders } from './helper/transform-http-headers';
+import { lastValueFrom, Observable, of } from 'rxjs';
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
 
 let interceptor: HttpClientEasyNetworkStubInterceptor;
