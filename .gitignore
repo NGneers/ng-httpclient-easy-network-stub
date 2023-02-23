@@ -5,3 +5,4 @@ test/junit.xml
 test/output
 .angular/
 dist/
+junit.xml

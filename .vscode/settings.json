@@ -1,3 +1,8 @@
 {
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "package.json": ".editorconfig,.npmignore,.npmrc,angular.json,jest.config.js,ng-package.json,pnpm-lock.yaml,tsconfig*.json",
+    "*.ts": "${capture}.spec.ts"
+  }
 }

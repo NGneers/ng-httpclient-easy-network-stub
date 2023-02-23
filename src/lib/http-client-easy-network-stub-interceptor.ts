@@ -4,10 +4,10 @@ import { Observable } from 'rxjs';
 import { transformHttpHeaders } from './helper/transform-http-headers';
 
 export class HttpClientEasyNetworkStubInterceptor implements HttpInterceptor {
-  private readonly interceptionHandlers: { baseUrl: string | RegExp; handler: (req: Request) => Promise<void> }[] = [];
+  private readonly _interceptionHandlers: { baseUrl: string | RegExp; handler: (req: Request) => Promise<void> }[] = [];
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const handler = this.interceptionHandlers.find(x => {
+    const handler = this._interceptionHandlers.find(x => {
       return req.url.match(x.baseUrl);
     });
 
@@ -35,6 +35,6 @@ export class HttpClientEasyNetworkStubInterceptor implements HttpInterceptor {
   }
 
   public addHandler(baseUrl: string | RegExp, handler: (req: Request) => Promise<void>) {
-    this.interceptionHandlers.push({ baseUrl, handler });
+    this._interceptionHandlers.push({ baseUrl, handler });
   }
 }

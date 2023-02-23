@@ -1,8 +1,10 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { EnvironmentProviders, ModuleWithProviders, NgModule, Provider } from '@angular/core';
+import { EnvironmentProviders, InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { HttpClientEasyNetworkStub } from './http-client-easy-network-stub';
 import { HttpClientEasyNetworkStubConfig } from './http-client-easy-network-stub-config.model';
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
+
+export const HTTP_CLIENT_EASY_NETWORK_STUBS = new InjectionToken<HttpClientEasyNetworkStub[]>('HTTP_CLIENT_EASY_NETWORK_STUBS');
 
 @NgModule()
 export class HttpClientEasyNetworkStubModule {
@@ -29,7 +31,7 @@ export class HttpClientEasyNetworkStubModule {
           useValue: interceptor
         },
         {
-          provide: HttpClientEasyNetworkStub,
+          provide: HTTP_CLIENT_EASY_NETWORK_STUBS,
           multi: true,
           useValue: stub
         },
