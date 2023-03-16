@@ -18,7 +18,7 @@ export class HttpClientEasyNetworkStubInterceptor implements HttpInterceptor {
           method: req.method as HttpMethod,
           body: req.body,
           headers: transformHttpHeaders(req.headers),
-          url: req.url,
+          url: req.urlWithParams,
           reply: r => {
             if (r.statusCode >= 200 && r.statusCode < 300) {
               subscriber.next(new HttpResponse<unknown>({ status: r.statusCode, headers: r.headers, body: r.body }));

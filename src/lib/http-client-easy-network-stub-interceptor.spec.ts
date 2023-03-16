@@ -1,4 +1,12 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpHeaders,
+  HttpParams,
+  HttpRequest,
+  HttpResponse
+} from '@angular/common/http';
 import { Request } from 'easy-network-stub';
 import { lastValueFrom, Observable, of } from 'rxjs';
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
@@ -31,11 +39,14 @@ describe('intercept', () => {
     const handler = jest.fn<Promise<void>, [Request]>(async r => {
       expect(r.method).toBe('POST');
       expect(r.body).toEqual(reqBody);
-      expect(r.url).toBe('/api/contacts');
+      expect(r.url).toBe('/api/contacts?test=123');
       r.reply({ statusCode: 200 });
     });
     interceptor.addHandler(/\/api\//, handler);
-    const request = new HttpRequest<any>('POST', '/api/contacts', reqBody, { headers: new HttpHeaders(headers) });
+    const request = new HttpRequest<any>('POST', '/api/contacts', reqBody, {
+      headers: new HttpHeaders(headers),
+      params: new HttpParams({ fromObject: { test: 123 } })
+    });
 
     await lastValueFrom(interceptor.intercept(request, nextHandlerMock));
 
