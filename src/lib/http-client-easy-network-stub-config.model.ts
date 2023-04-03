@@ -5,4 +5,5 @@ export interface HttpClientEasyNetworkStubConfig {
   urlMatch: string | RegExp;
   stubFactory?: (stub: HttpClientEasyNetworkStub) => void;
   stubInjectionToken?: InjectionToken<HttpClientEasyNetworkStub>;
+  getIsEnabled?: () => boolean;
 }

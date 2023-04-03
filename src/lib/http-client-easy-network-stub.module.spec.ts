@@ -28,6 +28,22 @@ it('forRoot without injection token and stubFactory', () => {
   ]);
 });
 
+it('forRoot with getIsEnabled returning false', () => {
+  const urlMatch = /\/api\//;
+
+  TestBed.configureTestingModule({
+    imports: [HttpClientEasyNetworkStubModule.forRoot({ urlMatch, getIsEnabled: () => false })]
+  });
+
+  const stubs = TestBed.inject(HTTP_CLIENT_EASY_NETWORK_STUBS, []);
+  const interceptors = TestBed.inject(HTTP_INTERCEPTORS);
+
+  expect(stubs).toHaveLength(0);
+  expect(interceptors).toHaveLength(1);
+  expect(interceptors[0]).toBeInstanceOf(HttpClientEasyNetworkStubInterceptor);
+  expect((interceptors[0] as any)._interceptionHandlers).toEqual([]);
+});
+
 it('forRoot with injection token', () => {
   const urlMatch = /\/api\//;
   const injectionToken = new InjectionToken<HttpClientEasyNetworkStub>('Blubbi');

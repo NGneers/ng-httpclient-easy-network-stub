@@ -16,24 +16,26 @@ export class HttpClientEasyNetworkStubModule {
     const configs = config instanceof Array ? config : [config];
     const providers: Array<Provider | EnvironmentProviders> = [];
 
-    configs.forEach(stubConfig => {
-      const stub = new HttpClientEasyNetworkStub(stubConfig.urlMatch);
-      stub.init(interceptor);
-      stubConfig.stubFactory?.(stub);
+    configs
+      .filter(x => x.getIsEnabled?.() !== false)
+      .forEach(stubConfig => {
+        const stub = new HttpClientEasyNetworkStub(stubConfig.urlMatch);
+        stub.init(interceptor);
+        stubConfig.stubFactory?.(stub);
 
-      providers.push({
-        provide: HTTP_CLIENT_EASY_NETWORK_STUBS,
-        multi: true,
-        useValue: stub
-      });
-
-      if (stubConfig.stubInjectionToken) {
         providers.push({
-          provide: stubConfig.stubInjectionToken,
+          provide: HTTP_CLIENT_EASY_NETWORK_STUBS,
+          multi: true,
           useValue: stub
         });
-      }
-    });
+
+        if (stubConfig.stubInjectionToken) {
+          providers.push({
+            provide: stubConfig.stubInjectionToken,
+            useValue: stub
+          });
+        }
+      });
 
     return {
       ngModule: HttpClientEasyNetworkStubModule,
