@@ -33,6 +33,19 @@ describe('intercept', () => {
     expect(response).toEqual(nextHandlerResponse);
   });
 
+  it('calls next if registered handler matches the url but is disabled', async () => {
+    const handler = jest.fn();
+    const getIsEnabled = jest.fn(() => false);
+    interceptor.addHandler({ baseUrl: /\/api\//, handler, getIsEnabled });
+    const request = new HttpRequest<any>('GET', '/api/contacts');
+
+    const response = await lastValueFrom(interceptor.intercept(request, nextHandlerMock));
+
+    expect(getIsEnabled).toHaveBeenCalled();
+    expect(nextHandlerMock.handle).toHaveBeenCalledWith(request);
+    expect(response).toEqual(nextHandlerResponse);
+  });
+
   it('calls handler if registered handler matches the url', async () => {
     const reqBody = { test: 'Test123' };
     const headers = { 'content-type': 'application/json', 'X-Custom-Header': ['Test1', 'Test2'] };
@@ -42,7 +55,7 @@ describe('intercept', () => {
       expect(r.url).toBe('/api/contacts?test=123');
       r.reply({ statusCode: 200 });
     });
-    interceptor.addHandler(/\/api\//, handler);
+    interceptor.addHandler({ baseUrl: /\/api\//, handler });
     const request = new HttpRequest<any>('POST', '/api/contacts', reqBody, {
       headers: new HttpHeaders(headers),
       params: new HttpParams({ fromObject: { test: 123 } })
@@ -56,7 +69,7 @@ describe('intercept', () => {
 
   it('calls next if no registered handler matches the url', async () => {
     const handler = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
-    interceptor.addHandler(/\/testing\//, handler);
+    interceptor.addHandler({ baseUrl: /\/testing\//, handler });
     const request = new HttpRequest<any>('GET', '/api/contacts');
 
     await lastValueFrom(interceptor.intercept(request, nextHandlerMock));
@@ -67,8 +80,8 @@ describe('intercept', () => {
   it('calls only one handler if multiple registered handlers match the url', async () => {
     const handler1 = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
     const handler2 = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
-    interceptor.addHandler(/\/api\//, handler1);
-    interceptor.addHandler(/\/api\//, handler2);
+    interceptor.addHandler({ baseUrl: /\/api\//, handler: handler1 });
+    interceptor.addHandler({ baseUrl: /\/api\//, handler: handler2 });
     const request = new HttpRequest<any>('GET', '/api/contacts');
 
     await lastValueFrom(interceptor.intercept(request, nextHandlerMock));
@@ -81,8 +94,8 @@ describe('intercept', () => {
   it('calls first handler of registered handlers that matches the url', async () => {
     const handler1 = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
     const handler2 = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
-    interceptor.addHandler(/\/testing\//, handler1);
-    interceptor.addHandler(/\/api\//, handler2);
+    interceptor.addHandler({ baseUrl: /\/testing\//, handler: handler1 });
+    interceptor.addHandler({ baseUrl: /\/api\//, handler: handler2 });
     const request = new HttpRequest<any>('GET', '/api/contacts');
 
     await lastValueFrom(interceptor.intercept(request, nextHandlerMock));
@@ -96,7 +109,7 @@ describe('intercept', () => {
 describe('handler call', () => {
   it('destory completes observable without value', async () => {
     const handler = jest.fn<Promise<void>, [Request]>(async r => r.destroy());
-    interceptor.addHandler(/\/api\//, handler);
+    interceptor.addHandler({ baseUrl: /\/api\//, handler });
     const request = new HttpRequest<any>('GET', '/api/contacts');
 
     await lastValueFrom(interceptor.intercept(request, nextHandlerMock))
@@ -110,7 +123,7 @@ describe('handler call', () => {
       const respBody = { test: 'Test123' };
       const headers = { 'content-type': 'application/json', 'X-Custom-Header': ['Test1', 'Test2'] };
       const handler = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode, body: respBody, headers }));
-      interceptor.addHandler(/\/api\//, handler);
+      interceptor.addHandler({ baseUrl: /\/api\//, handler });
       const request = new HttpRequest<any>('GET', '/api/contacts');
 
       const response = await lastValueFrom(interceptor.intercept(request, nextHandlerMock));
@@ -133,7 +146,7 @@ describe('handler call', () => {
       const respBody = { test: 'Test123' };
       const headers = { 'content-type': 'application/json', 'X-Custom-Header': ['Test1', 'Test2'] };
       const handler = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode, body: respBody, headers }));
-      interceptor.addHandler(/\/api\//, handler);
+      interceptor.addHandler({ baseUrl: /\/api\//, handler });
       const request = new HttpRequest<any>('GET', '/api/contacts');
 
       await lastValueFrom(interceptor.intercept(request, nextHandlerMock))

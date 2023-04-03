@@ -3,12 +3,18 @@ import { HttpMethod, Request } from 'easy-network-stub';
 import { Observable } from 'rxjs';
 import { transformHttpHeaders } from './helper/transform-http-headers';
 
+export type InterceptorHandler = {
+  baseUrl: string | RegExp;
+  handler: (req: Request) => Promise<void>;
+  getIsEnabled?: () => boolean;
+};
+
 export class HttpClientEasyNetworkStubInterceptor implements HttpInterceptor {
-  private readonly _interceptionHandlers: { baseUrl: string | RegExp; handler: (req: Request) => Promise<void> }[] = [];
+  private readonly _interceptionHandlers: InterceptorHandler[] = [];
 
   public intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const handler = this._interceptionHandlers.find(x => {
-      return req.url.match(x.baseUrl);
+      return req.url.match(x.baseUrl) && x.getIsEnabled?.() !== false;
     });
 
     if (handler) {
@@ -34,7 +40,7 @@ export class HttpClientEasyNetworkStubInterceptor implements HttpInterceptor {
     return next.handle(req);
   }
 
-  public addHandler(baseUrl: string | RegExp, handler: (req: Request) => Promise<void>) {
-    this._interceptionHandlers.push({ baseUrl, handler });
+  public addHandler(handler: InterceptorHandler) {
+    this._interceptionHandlers.push(handler);
   }
 }

@@ -28,20 +28,28 @@ it('forRoot without injection token and stubFactory', () => {
   ]);
 });
 
-it('forRoot with getIsEnabled returning false', () => {
+it('forRoot with getIsEnabled', () => {
   const urlMatch = /\/api\//;
+  const getIsEnabled = jest.fn();
 
   TestBed.configureTestingModule({
-    imports: [HttpClientEasyNetworkStubModule.forRoot({ urlMatch, getIsEnabled: () => false })]
+    imports: [HttpClientEasyNetworkStubModule.forRoot({ urlMatch, getIsEnabled })]
   });
 
   const stubs = TestBed.inject(HTTP_CLIENT_EASY_NETWORK_STUBS, []);
   const interceptors = TestBed.inject(HTTP_INTERCEPTORS);
 
-  expect(stubs).toHaveLength(0);
+  expect(stubs).toHaveLength(1);
+  expect((stubs[0] as any)._urlMatch).toEqual(urlMatch);
   expect(interceptors).toHaveLength(1);
   expect(interceptors[0]).toBeInstanceOf(HttpClientEasyNetworkStubInterceptor);
-  expect((interceptors[0] as any)._interceptionHandlers).toEqual([]);
+  expect((interceptors[0] as any)._interceptionHandlers).toEqual([
+    {
+      baseUrl: urlMatch,
+      handler: expect.anything(),
+      getIsEnabled
+    }
+  ]);
 });
 
 it('forRoot with injection token', () => {

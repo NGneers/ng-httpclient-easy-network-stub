@@ -6,7 +6,7 @@ export class HttpClientEasyNetworkStub extends EasyNetworkStub {
     super(urlMatch);
   }
 
-  public init(interceptor: HttpClientEasyNetworkStubInterceptor) {
+  public init(interceptor: HttpClientEasyNetworkStubInterceptor, getIsEnabled?: () => boolean) {
     this.initInternal({
       failer: error => {
         if (error instanceof Error) {
@@ -16,7 +16,7 @@ export class HttpClientEasyNetworkStub extends EasyNetworkStub {
         }
       },
       interceptor: (baseUrl, handler) => {
-        interceptor.addHandler(baseUrl, handler);
+        interceptor.addHandler({ baseUrl, handler, getIsEnabled });
       }
     });
   }
