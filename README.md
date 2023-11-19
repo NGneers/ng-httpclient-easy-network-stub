@@ -1,8 +1,6 @@
-[![npm](https://img.shields.io/npm/v/ng-httpclient-easy-network-stub?color=%2300d26a&style=for-the-badge)](https://www.npmjs.com/package/playwright-easy-network-stub)
-[![CI](https://img.shields.io/github/actions/workflow/status/MaSch0212/ng-httpclient-easy-network-stub/build.yml?branch=main&style=for-the-badge)](https://github.com/LoaderB0T/playwright-easy-network-stub/actions/workflows/build.yml)
-[![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/MaSch0212_ng-httpclient-easy-network-stub?server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge)](https://sonarcloud.io/summary/new_code?id=MaSch0212_ng-httpclient-easy-network-stub)
-
-<!--[![bundle size](https://img.shields.io/bundlephobia/minzip/ng-httpclient-easy-network-stub?color=%23FF006F&label=Bundle%20Size&style=for-the-badge)](https://bundlephobia.com/package/ng-httpclient-easy-network-stub)-->
+[![npm](https://img.shields.io/npm/v/@ngneers/ng-httpclient-easy-network-stub?color=%2300d26a&style=for-the-badge)](https://www.npmjs.com/package/@ngneers/ng-httpclient-easy-network-stub)
+[![CI](https://img.shields.io/github/actions/workflow/status/NGneers/ng-httpclient-easy-network-stub/build.yml?branch=main&style=for-the-badge)](https://github.com/NGneers/ng-httpclient-easy-network-stub/actions/workflows/build.yml)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@ngneers/ng-httpclient-easy-network-stub?color=%23FF006F&label=Bundle%20Size&style=for-the-badge)](https://bundlephobia.com/package/@ngneers/ng-httpclient-easy-network-stub)
 
 # ng-httpclient-easy-network-stub
 
@@ -41,16 +39,16 @@ The primary use case for this package is to create a mock server for your applic
 
 ```typescript
 import { NgModule } from '@angular/core';
-import { HttpClientEasyNetworkStubModule } from 'ng-httpclient-easy-network-stub';
+import { HttpClientEasyNetworkStubModule } from '@ngneers/ng-httpclient-easy-network-stub';
 import { configureStub } from './configure-stub';
 
 @NgModule({
   imports: [
     HttpClientEasyNetworkStubModule.forRoot({
       urlMatch: /MyServer\/api\/Blog/,
-      stubFactory: configureStub
-    })
-  ]
+      stubFactory: configureStub,
+    }),
+  ],
 })
 export class SingleStubModule {}
 ```
@@ -58,7 +56,7 @@ export class SingleStubModule {}
 ### Stub configuration
 
 ```typescript
-import { HttpClientEasyNetworkStub } from 'ng-httpclient-easy-network-stub';
+import { HttpClientEasyNetworkStub } from '@ngneers/ng-httpclient-easy-network-stub';
 
 export const configureStub = (blogStub: HttpClientEasyNetworkStub) => {
   const posts = [0, 1, 2, 3, 4, 5].map(x => ({ postId: x, text: `test${x}` }));
@@ -79,12 +77,16 @@ export const configureStub = (blogStub: HttpClientEasyNetworkStub) => {
 
   // Match Example: POST: /MyServer/api/Blog/test/true?query=myValue&secondQuery=myOtherValue
   // Note: The order of the query parameters is not important
-  blogStub.stub('POST', 'test/{something:boolean}?{query:string}&{secondQuery:number}', ({ body, params }) => {
-    console.log(params.something);
-    console.log(params.query);
-    console.log(params.secondQuery);
-    console.log(body);
-  });
+  blogStub.stub(
+    'POST',
+    'test/{something:boolean}?{query:string}&{secondQuery:number}',
+    ({ body, params }) => {
+      console.log(params.something);
+      console.log(params.query);
+      console.log(params.secondQuery);
+      console.log(body);
+    }
+  );
 
   // Here we use the stub2<>() method to create a stub with a typed body
   blogStub.stub2<MyRequest>()('POST', 'test', ({ body }) => {
@@ -114,7 +116,7 @@ export const configureStub = (blogStub: HttpClientEasyNetworkStub) => {
 
 ```typescript
 import { NgModule } from '@angular/core';
-import { HttpClientEasyNetworkStubModule } from 'ng-httpclient-easy-network-stub';
+import { HttpClientEasyNetworkStubModule } from '@ngneers/ng-httpclient-easy-network-stub';
 import { configureBlogStub } from './stubs';
 
 @NgModule({
@@ -122,14 +124,14 @@ import { configureBlogStub } from './stubs';
     HttpClientEasyNetworkStubModule.forRoot([
       {
         urlMatch: /MyServer\/api\/Blog/,
-        stubFactory: configureBlogStub
+        stubFactory: configureBlogStub,
       },
       {
         urlMatch: /MyServer\/api\/Users/,
-        stubFactory: configureUsersStub
-      }
-    ])
-  ]
+        stubFactory: configureUsersStub,
+      },
+    ]),
+  ],
 })
 export class SingleStubModule {}
 ```
@@ -140,7 +142,7 @@ You can also specify an injection token for each stub, so it can be injected int
 
 ```typescript
 import { Inject, Injectable, InjectionToken, NgModule } from '@angular/core';
-import { HttpClientEasyNetworkStubModule } from 'ng-httpclient-easy-network-stub';
+import { HttpClientEasyNetworkStubModule } from '@ngneers/ng-httpclient-easy-network-stub';
 import { configureStub } from './configure-stub';
 
 export const BLOG_STUB = new InjectionToken<HttpClientEasyNetworkStub>('BLOG_STUB');
@@ -150,9 +152,9 @@ export const BLOG_STUB = new InjectionToken<HttpClientEasyNetworkStub>('BLOG_STU
     HttpClientEasyNetworkStubModule.forRoot({
       urlMatch: /MyServer\/api\/Blog/,
       stubFactory: configureStub,
-      stubInjectionToken: BLOG_STUB
-    })
-  ]
+      stubInjectionToken: BLOG_STUB,
+    }),
+  ],
 })
 export class SingleStubModule {}
 
@@ -192,7 +194,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Contact 📧
 
-Project Link: [https://github.com/MaSch0212/ng-httpclient-easy-network-stub](https://github.com/LoaderB0T/ng-httpclient-easy-network-stub)
+Project Link: [https://github.com/NGneers/ng-httpclient-easy-network-stub](https://github.com/NGneers/ng-httpclient-easy-network-stub)
 
 ## Special Thanks 🙌
 

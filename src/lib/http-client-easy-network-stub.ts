@@ -1,4 +1,5 @@
 import { EasyNetworkStub } from 'easy-network-stub';
+
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
 
 export class HttpClientEasyNetworkStub extends EasyNetworkStub {
@@ -17,7 +18,7 @@ export class HttpClientEasyNetworkStub extends EasyNetworkStub {
       },
       interceptor: (baseUrl, handler) => {
         interceptor.addHandler({ baseUrl, handler, getIsEnabled });
-      }
+      },
     });
   }
 }

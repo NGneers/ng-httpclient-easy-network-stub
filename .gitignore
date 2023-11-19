@@ -1,8 +1,4 @@
-node_modules/**
-lib/**
-playwright-report
-test/junit.xml
-test/output
 .angular/
+.jest/
 dist/
-junit.xml
+node_modules/

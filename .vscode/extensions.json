@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "firsttris.vscode-jest-runner",
+    "dbaeumer.vscode-eslint"
+
+    // Remove comments if repository contains Angular Projects
+    // "angular.ng-template",
+  ]
+}

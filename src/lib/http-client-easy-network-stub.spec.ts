@@ -1,5 +1,8 @@
 import { HttpClientEasyNetworkStub } from './http-client-easy-network-stub';
-import { HttpClientEasyNetworkStubInterceptor, InterceptorHandler } from './http-client-easy-network-stub-interceptor';
+import {
+  HttpClientEasyNetworkStubInterceptor,
+  InterceptorHandler,
+} from './http-client-easy-network-stub-interceptor';
 
 describe('init', () => {
   it('adds a handler to the http interceptor', () => {
@@ -13,7 +16,7 @@ describe('init', () => {
     expect(interceptorSpy).toHaveBeenCalledWith<[InterceptorHandler]>({
       baseUrl: /\/api\//,
       handler: expect.anything(),
-      getIsEnabled
+      getIsEnabled,
     });
   });
 });

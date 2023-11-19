@@ -5,7 +5,7 @@ import {
   HttpHeaders,
   HttpParams,
   HttpRequest,
-  HttpResponse
+  HttpResponse,
 } from '@angular/common/http';
 import { Request } from 'easy-network-stub';
 import { lastValueFrom, Observable, of } from 'rxjs';
@@ -19,7 +19,7 @@ beforeEach(() => {
   interceptor = new HttpClientEasyNetworkStubInterceptor();
   nextHandlerResponse = new HttpResponse<any>({ status: 200, body: {} });
   nextHandlerMock = {
-    handle: jest.fn<Observable<HttpEvent<any>>, [HttpRequest<any>]>(() => of(nextHandlerResponse))
+    handle: jest.fn<Observable<HttpEvent<any>>, [HttpRequest<any>]>(() => of(nextHandlerResponse)),
   } as unknown as HttpHandler;
 });
 
@@ -58,7 +58,7 @@ describe('intercept', () => {
     interceptor.addHandler({ baseUrl: /\/api\//, handler });
     const request = new HttpRequest<any>('POST', '/api/contacts', reqBody, {
       headers: new HttpHeaders(headers),
-      params: new HttpParams({ fromObject: { test: 123 } })
+      params: new HttpParams({ fromObject: { test: 123 } }),
     });
 
     await lastValueFrom(interceptor.intercept(request, nextHandlerMock));
@@ -122,7 +122,9 @@ describe('handler call', () => {
     async statusCode => {
       const respBody = { test: 'Test123' };
       const headers = { 'content-type': 'application/json', 'X-Custom-Header': ['Test1', 'Test2'] };
-      const handler = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode, body: respBody, headers }));
+      const handler = jest.fn<Promise<void>, [Request]>(async r =>
+        r.reply({ statusCode, body: respBody, headers })
+      );
       interceptor.addHandler({ baseUrl: /\/api\//, handler });
       const request = new HttpRequest<any>('GET', '/api/contacts');
 
@@ -135,7 +137,7 @@ describe('handler call', () => {
       expect({ status: r.status, headers: r.headers, body: r.body }).toEqual({
         status: statusCode,
         headers,
-        body: respBody
+        body: respBody,
       });
     }
   );
@@ -145,7 +147,9 @@ describe('handler call', () => {
     async statusCode => {
       const respBody = { test: 'Test123' };
       const headers = { 'content-type': 'application/json', 'X-Custom-Header': ['Test1', 'Test2'] };
-      const handler = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode, body: respBody, headers }));
+      const handler = jest.fn<Promise<void>, [Request]>(async r =>
+        r.reply({ statusCode, body: respBody, headers })
+      );
       interceptor.addHandler({ baseUrl: /\/api\//, handler });
       const request = new HttpRequest<any>('GET', '/api/contacts');
 
@@ -159,7 +163,7 @@ describe('handler call', () => {
           expect({ status: r.status, headers: r.headers, error: r.error }).toEqual({
             status: statusCode,
             headers,
-            error: respBody
+            error: respBody,
           });
         });
     }

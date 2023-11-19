@@ -1,7 +1,6 @@
+import { getAngularJestConfig } from '@ngneers/jest-config-angular';
+
+/** @type {import('ts-jest/dist/types').JestConfigWithTsJest} */
 export default {
-  preset: 'jest-preset-angular',
-  roots: ['<rootDir>/src/'],
-  testMatch: ['**/+(*.)+(spec).+(ts)'],
-  setupFilesAfterEnv: ['<rootDir>/src/test.ts'],
-  reporters: ['default', ['jest-junit', { outputName: 'junit.xml' }]]
-}
+  ...getAngularJestConfig(/* Optionally provide options */),
+};

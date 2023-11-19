@@ -1,14 +1,23 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { EnvironmentProviders, InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
+import {
+  EnvironmentProviders,
+  InjectionToken,
+  ModuleWithProviders,
+  NgModule,
+  Provider,
+} from '@angular/core';
+
 import { HttpClientEasyNetworkStub } from './http-client-easy-network-stub';
 import { HttpClientEasyNetworkStubConfig } from './http-client-easy-network-stub-config.model';
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
 
-export const HTTP_CLIENT_EASY_NETWORK_STUBS = new InjectionToken<HttpClientEasyNetworkStub[]>('HTTP_CLIENT_EASY_NETWORK_STUBS');
+export const HTTP_CLIENT_EASY_NETWORK_STUBS = new InjectionToken<HttpClientEasyNetworkStub[]>(
+  'HTTP_CLIENT_EASY_NETWORK_STUBS'
+);
 
 @NgModule()
 export class HttpClientEasyNetworkStubModule {
-  static forRoot(
+  public static forRoot(
     config: HttpClientEasyNetworkStubConfig | HttpClientEasyNetworkStubConfig[]
   ): ModuleWithProviders<HttpClientEasyNetworkStubModule> {
     const interceptor = new HttpClientEasyNetworkStubInterceptor();
@@ -24,13 +33,13 @@ export class HttpClientEasyNetworkStubModule {
       providers.push({
         provide: HTTP_CLIENT_EASY_NETWORK_STUBS,
         multi: true,
-        useValue: stub
+        useValue: stub,
       });
 
       if (stubConfig.stubInjectionToken) {
         providers.push({
           provide: stubConfig.stubInjectionToken,
-          useValue: stub
+          useValue: stub,
         });
       }
     });
@@ -41,10 +50,10 @@ export class HttpClientEasyNetworkStubModule {
         {
           provide: HTTP_INTERCEPTORS,
           multi: true,
-          useValue: interceptor
+          useValue: interceptor,
         },
-        ...providers
-      ]
+        ...providers,
+      ],
     };
   }
 }

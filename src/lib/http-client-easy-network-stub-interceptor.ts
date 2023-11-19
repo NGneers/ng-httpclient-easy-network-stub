@@ -1,6 +1,14 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpResponse,
+} from '@angular/common/http';
 import { HttpMethod, Request } from 'easy-network-stub';
 import { Observable } from 'rxjs';
+
 import { transformHttpHeaders } from './helper/transform-http-headers';
 
 export type InterceptorHandler = {
@@ -27,12 +35,20 @@ export class HttpClientEasyNetworkStubInterceptor implements HttpInterceptor {
           url: req.urlWithParams,
           reply: r => {
             if (r.statusCode >= 200 && r.statusCode < 300) {
-              subscriber.next(new HttpResponse<unknown>({ status: r.statusCode, headers: r.headers, body: r.body }));
+              subscriber.next(
+                new HttpResponse<unknown>({
+                  status: r.statusCode,
+                  headers: r.headers,
+                  body: r.body,
+                })
+              );
             } else {
-              subscriber.error(new HttpErrorResponse({ status: r.statusCode, headers: r.headers, error: r.body }));
+              subscriber.error(
+                new HttpErrorResponse({ status: r.statusCode, headers: r.headers, error: r.body })
+              );
             }
             subscriber.complete();
-          }
+          },
         });
       });
     }

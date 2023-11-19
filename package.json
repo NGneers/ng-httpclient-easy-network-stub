@@ -1,48 +1,59 @@
 {
-  "name": "ng-httpclient-easy-network-stub",
+  "name": "@ngneers/ng-httpclient-easy-network-stub",
   "version": "1.1.4",
-  "repository": "https://github.com/MaSch0212/ng-httpclient-easy-network-stub.git",
+  "repository": "https://github.com/NGneers/ng-httpclient-easy-network-stub.git",
   "author": {
-    "name": "Marc Schmidt (MaSch0212)",
-    "url": "https://github.com/MaSch0212"
+    "name": "Marc Schmidt (MaSch0212) @ NGneers",
+    "url": "https://github.com/NGneers"
   },
   "license": "MIT",
   "type": "module",
-  "prettier": "@awdware/prettier-config",
   "scripts": {
     "build": "pnpm ng build --configuration production",
     "lint": "pnpm eslint .",
     "test": "pnpm jest",
     "test:watch": "pnpm jest --watch"
   },
+  "prettier": "@ngneers/prettier-config",
   "dependencies": {
     "easy-network-stub": "^6.2.0",
     "tslib": "^2.3.0"
-  },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "^16.0.3",
-    "@angular/cli": "^16.0.3",
-    "@angular/compiler-cli": "^16.0.3",
-    "@angular/core": "^16.0.3",
-    "@awdware/prettier-config": "^1.0.0",
-    "@types/jest": "^29.4.0",
-    "@types/node": "^20.2.5",
-    "@typescript-eslint/eslint-plugin": "^5.59.8",
-    "@typescript-eslint/parser": "^5.59.8",
-    "eslint": "^8.41.0",
-    "jest": "^29.4.3",
-    "jest-junit": "^15.0.0",
-    "jest-preset-angular": "^13.0.0",
-    "ng-packagr": "^16.0.1",
-    "prettier": "^2.8.8",
-    "rimraf": "^5.0.1",
-    "ts-jest": "^29.0.5",
-    "ts-node": "^10.1.0",
-    "typescript": "^5.0.4"
   },
   "peerDependencies": {
     "@angular/common": ">= 12.0.0",
     "@angular/core": ">= 12.0.0",
     "rxjs": ">= 6.5.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^17.0.1",
+    "@angular-eslint/builder": "^17.1.0",
+    "@angular-eslint/eslint-plugin": "^17.1.0",
+    "@angular-eslint/eslint-plugin-template": "^17.1.0",
+    "@angular-eslint/template-parser": "^17.1.0",
+    "@angular/cli": "^17.0.1",
+    "@angular/compiler-cli": "^17.0.3",
+    "@angular/core": "^17.0.3",
+    "@ngneers/eslint-config": "^1.0.0",
+    "@ngneers/eslint-config-angular": "^1.0.1",
+    "@ngneers/jest-config": "^1.0.0",
+    "@ngneers/jest-config-angular": "^1.0.0",
+    "@ngneers/prettier-config": "^1.0.0",
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.9.2",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "jest-preset-angular": "^13.1.4",
+    "ng-packagr": "^17.0.1",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   }
 }

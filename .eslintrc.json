@@ -1,7 +1,6 @@
 {
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-  "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "ignorePatterns": ["dist/**/*", "**/*.spec.ts"],
-  "root": true
+  "extends": ["@ngneers/eslint-config-angular"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
 }
