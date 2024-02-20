@@ -1,19 +1,17 @@
-import { HttpInterceptor, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpInterceptor } from '@angular/common/http';
 import { InjectionToken } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Request } from 'easy-network-stub';
 import { HttpClientEasyNetworkStub } from './http-client-easy-network-stub';
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
-import {
-  HttpClientEasyNetworkStubModule,
-  HTTP_CLIENT_EASY_NETWORK_STUBS,
-} from './http-client-easy-network-stub.module';
+import { HTTP_CLIENT_EASY_NETWORK_STUBS } from './injection-tokens';
+import { provideHttpClientEasyNetworkStub } from './provide-http-client-easy-network-stub';
 
-it('forRoot without injection token and stubFactory', () => {
+it('provideHttpClientEasyNetworkStub without injection token and stubFactory', () => {
   const urlMatch = /\/api\//;
 
   TestBed.configureTestingModule({
-    imports: [HttpClientEasyNetworkStubModule.forRoot({ urlMatch })],
+    providers: [provideHttpClientEasyNetworkStub({ urlMatch })],
   });
 
   const stubs = TestBed.inject(HTTP_CLIENT_EASY_NETWORK_STUBS);
@@ -31,12 +29,12 @@ it('forRoot without injection token and stubFactory', () => {
   ]);
 });
 
-it('forRoot with getIsEnabled', () => {
+it('provideHttpClientEasyNetworkStub with getIsEnabled', () => {
   const urlMatch = /\/api\//;
   const getIsEnabled = jest.fn();
 
   TestBed.configureTestingModule({
-    imports: [HttpClientEasyNetworkStubModule.forRoot({ urlMatch, getIsEnabled })],
+    providers: [provideHttpClientEasyNetworkStub({ urlMatch, getIsEnabled })],
   });
 
   const stubs = TestBed.inject(HTTP_CLIENT_EASY_NETWORK_STUBS, []);
@@ -55,32 +53,30 @@ it('forRoot with getIsEnabled', () => {
   ]);
 });
 
-it('forRoot with injection token', () => {
+it('provideHttpClientEasyNetworkStub with injection token', () => {
   const urlMatch = /\/api\//;
   const injectionToken = new InjectionToken<HttpClientEasyNetworkStub>('Blubbi');
 
   TestBed.configureTestingModule({
-    imports: [
-      HttpClientEasyNetworkStubModule.forRoot({ urlMatch, stubInjectionToken: injectionToken }),
-    ],
+    providers: [provideHttpClientEasyNetworkStub({ urlMatch, stubInjectionToken: injectionToken })],
   });
 
   const stub = TestBed.inject(injectionToken);
   expect(stub).toBeInstanceOf(HttpClientEasyNetworkStub);
 });
 
-it('forRoot with stub factory', () => {
+it('provideHttpClientEasyNetworkStub with stub factory', () => {
   const urlMatch = /\/api\//;
   const stubFactory = jest.fn<void, [HttpClientEasyNetworkStub]>();
 
   TestBed.configureTestingModule({
-    imports: [HttpClientEasyNetworkStubModule.forRoot({ urlMatch, stubFactory })],
+    providers: [provideHttpClientEasyNetworkStub({ urlMatch, stubFactory })],
   });
 
   expect(stubFactory).toHaveBeenCalledWith<[HttpClientEasyNetworkStub]>(expect.anything());
 });
 
-it('multiple imports of stub module', () => {
+it('multiple provideHttpClientEasyNetworkStub', () => {
   const urlMatch1 = /\/api\/v1\//;
   const urlMatch2 = /\/api\/v2\//;
   const injectionToken1 = new InjectionToken<HttpClientEasyNetworkStub>('v1');
@@ -89,13 +85,13 @@ it('multiple imports of stub module', () => {
   const stubFactory2 = jest.fn<void, [HttpClientEasyNetworkStub]>();
 
   TestBed.configureTestingModule({
-    imports: [
-      HttpClientEasyNetworkStubModule.forRoot({
+    providers: [
+      provideHttpClientEasyNetworkStub({
         urlMatch: urlMatch1,
         stubFactory: stubFactory1,
         stubInjectionToken: injectionToken1,
       }),
-      HttpClientEasyNetworkStubModule.forRoot({
+      provideHttpClientEasyNetworkStub({
         urlMatch: urlMatch2,
         stubFactory: stubFactory2,
         stubInjectionToken: injectionToken2,
@@ -141,8 +137,8 @@ it('multiple stub configs', () => {
   const stubFactory2 = jest.fn<void, [HttpClientEasyNetworkStub]>();
 
   TestBed.configureTestingModule({
-    imports: [
-      HttpClientEasyNetworkStubModule.forRoot([
+    providers: [
+      provideHttpClientEasyNetworkStub([
         {
           urlMatch: urlMatch1,
           stubFactory: stubFactory1,

@@ -35,22 +35,21 @@ The primary use case for this package is to create a mock server for your applic
 
 ## Usage Example 🚀
 
-### Module Import
+### Provide the stubs
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { HttpClientEasyNetworkStubModule } from '@ngneers/ng-httpclient-easy-network-stub';
+import { ApplicationConfig } from '@angular/core';
+import { provideHttpClientEasyNetworkStub } from '@ngneers/ng-httpclient-easy-network-stub';
 import { configureStub } from './configure-stub';
 
-@NgModule({
-  imports: [
-    HttpClientEasyNetworkStubModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClientEasyNetworkStub({
       urlMatch: /MyServer\/api\/Blog/,
       stubFactory: configureStub,
     }),
   ],
-})
-export class SingleStubModule {}
+};
 ```
 
 ### Stub configuration
@@ -115,13 +114,13 @@ export const configureStub = (blogStub: HttpClientEasyNetworkStub) => {
 ### Configure multiple stubs
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { HttpClientEasyNetworkStubModule } from '@ngneers/ng-httpclient-easy-network-stub';
-import { configureBlogStub } from './stubs';
+import { ApplicationConfig } from '@angular/core';
+import { provideHttpClientEasyNetworkStub } from '@ngneers/ng-httpclient-easy-network-stub';
+import { configureStub } from './configure-stub';
 
-@NgModule({
-  imports: [
-    HttpClientEasyNetworkStubModule.forRoot([
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClientEasyNetworkStub([
       {
         urlMatch: /MyServer\/api\/Blog/,
         stubFactory: configureBlogStub,
@@ -132,8 +131,7 @@ import { configureBlogStub } from './stubs';
       },
     ]),
   ],
-})
-export class SingleStubModule {}
+};
 ```
 
 ### Stub injection token
@@ -141,22 +139,21 @@ export class SingleStubModule {}
 You can also specify an injection token for each stub, so it can be injected into services or factory methods:
 
 ```typescript
-import { Inject, Injectable, InjectionToken, NgModule } from '@angular/core';
-import { HttpClientEasyNetworkStubModule } from '@ngneers/ng-httpclient-easy-network-stub';
+import { ApplicationConfig, Inject, Injectable, InjectionToken } from '@angular/core';
+import { provideHttpClientEasyNetworkStub } from '@ngneers/ng-httpclient-easy-network-stub';
 import { configureStub } from './configure-stub';
 
 export const BLOG_STUB = new InjectionToken<HttpClientEasyNetworkStub>('BLOG_STUB');
 
-@NgModule({
-  imports: [
-    HttpClientEasyNetworkStubModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClientEasyNetworkStub({
       urlMatch: /MyServer\/api\/Blog/,
       stubFactory: configureStub,
       stubInjectionToken: BLOG_STUB,
     }),
   ],
-})
-export class SingleStubModule {}
+};
 
 @Injectable({ providedIn: 'root' })
 export class MyService {
