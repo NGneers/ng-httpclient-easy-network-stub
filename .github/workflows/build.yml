@@ -1,7 +1,5 @@
-name: CI
-
+name: Build
 on:
-  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
@@ -9,34 +7,70 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - run: corepack enable
-      - uses: actions/setup-node@v3
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: pnpm
 
-      - name: Install
-        run: pnpm install
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm run lint
 
+      - name: Test
+        id: test
+        run: pnpm run test
+
       - name: Build
         run: pnpm run build
 
-      - name: Test
-        run: pnpm run test
-        env:
-          FORCE_COLOR: 1
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
 
-      # - name: Publish Unit Test Results
-      #   uses: EnricoMi/publish-unit-test-result-action@v1
-      #   if: always()
-      #   with:
-      #     files: junit.xml
+  publish:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish @ngneers/ng-httpclient-easy-network-stub
+        id: publish
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: dist
+
+      - name: Create Tag for @ngneers/ng-httpclient-easy-network-stub
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: v${{ steps.publish.outputs.version }}
+          tag_exists_error: false
