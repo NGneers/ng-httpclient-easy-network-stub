@@ -2,6 +2,7 @@ import { HTTP_INTERCEPTORS, HttpInterceptor } from '@angular/common/http';
 import { InjectionToken } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Request } from 'easy-network-stub';
+
 import { HttpClientEasyNetworkStub } from './http-client-easy-network-stub';
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
 import { HTTP_CLIENT_EASY_NETWORK_STUBS } from './injection-tokens';
