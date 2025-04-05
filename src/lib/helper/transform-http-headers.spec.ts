@@ -1,4 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
+
 import { transformHttpHeaders } from './transform-http-headers';
 
 it('transforms the headers correctly', () => {

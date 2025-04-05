@@ -9,6 +9,7 @@ import {
 } from '@angular/common/http';
 import { Request } from 'easy-network-stub';
 import { lastValueFrom, Observable, of } from 'rxjs';
+
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
 
 let interceptor: HttpClientEasyNetworkStubInterceptor;
