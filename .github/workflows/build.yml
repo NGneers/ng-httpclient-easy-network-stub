@@ -50,8 +50,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     permissions:
+      id-token: write
       contents: write
     steps:
       - name: Checkout
@@ -65,15 +66,22 @@ jobs:
           name: dist
           path: dist
 
-      - name: Publish @ngneers/ng-httpclient-easy-network-stub
-        id: publish
-        uses: JS-DevTools/npm-publish@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: dist
+          node-version: 24.13.0
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish @ngneers/ng-httpclient-easy-network-stub
+        run: npm publish --tag testing --provenance
+        working-directory: dist
 
       - name: Create Tag for @ngneers/ng-httpclient-easy-network-stub
-        uses: rickstaa/action-create-tag@v1
-        with:
-          tag: v${{ steps.publish.outputs.version }}
-          tag_exists_error: false
+        run: |
+          tag="v$(node -p "require('./dist/package.json').version")"
+          if (git rev-parse "$tag" >/dev/null 2>&1); then
+            echo "Tag $tag already exists. Skipping tag creation."
+          else
+            git tag "$tag"
+            git push origin "$tag"
+          fi
