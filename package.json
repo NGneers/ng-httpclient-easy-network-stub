@@ -1,6 +1,6 @@
 {
   "name": "@ngneers/ng-httpclient-easy-network-stub",
-  "version": "20.0.0",
+  "version": "20.0.1-beta.1",
   "repository": "https://github.com/NGneers/ng-httpclient-easy-network-stub.git",
   "author": {
     "name": "Marc Schmidt (MaSch0212) @ NGneers",
