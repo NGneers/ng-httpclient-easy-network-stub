@@ -69,9 +69,6 @@ jobs:
           name: dist
           path: dist
 
-      - name: Enable Corepack
-        run: corepack enable
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -79,7 +76,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Publish @ngneers/ng-httpclient-easy-network-stub
-        run: pnpm publish --no-git-checks --tag testing --access public
+        run: npm publish --tag testing --provenance
         working-directory: dist
 
       - name: Create Tag for @ngneers/ng-httpclient-easy-network-stub
