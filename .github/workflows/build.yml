@@ -76,7 +76,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Publish @ngneers/ng-httpclient-easy-network-stub
-        run: npm publish --ignore-scripts
+        run: npm publish --access public --ignore-scripts
         working-directory: dist
 
       - name: Create Tag for @ngneers/ng-httpclient-easy-network-stub
