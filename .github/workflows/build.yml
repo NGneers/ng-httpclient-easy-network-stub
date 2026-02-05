@@ -5,6 +5,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     name: Build
@@ -52,7 +56,6 @@ jobs:
     timeout-minutes: 20
     # if: github.ref == 'refs/heads/main'
     permissions:
-      id-token: write
       contents: write
     steps:
       - name: Checkout
