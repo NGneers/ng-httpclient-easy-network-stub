@@ -5,10 +5,6 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   build:
     name: Build
@@ -82,7 +78,7 @@ jobs:
 
       - name: Create Tag for @ngneers/ng-httpclient-easy-network-stub
         run: |
-          $tag = "v$(node -p "require('./dist/package.json').version")"
+          tag="v$(node -p "require('./dist/package.json').version")"
           if (git rev-parse "$tag" >/dev/null 2>&1); then
             echo "Tag $tag already exists. Skipping tag creation."
           else
