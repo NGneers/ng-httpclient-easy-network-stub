@@ -79,7 +79,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Publish @ngneers/ng-httpclient-easy-network-stub
-        run: pnpm publish
+        run: pnpm publish --no-git-checks
         working-directory: dist
 
       - name: Create Tag for @ngneers/ng-httpclient-easy-network-stub
