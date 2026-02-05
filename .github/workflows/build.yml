@@ -50,7 +50,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     permissions:
       id-token: write
       contents: write
@@ -69,12 +69,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24.13.0
+          node-version: 24
           registry-url: "https://registry.npmjs.org"
           always-auth: false
 
       - name: Publish @ngneers/ng-httpclient-easy-network-stub
-        run: npm publish --tag testing
+        run: npm publish
         working-directory: dist
 
       - name: Create Tag for @ngneers/ng-httpclient-easy-network-stub
