@@ -71,9 +71,10 @@ jobs:
         with:
           node-version: 24.13.0
           registry-url: "https://registry.npmjs.org"
+          always-auth: false
 
       - name: Publish @ngneers/ng-httpclient-easy-network-stub
-        run: npm publish --tag testing --provenance
+        run: npm publish --tag testing
         working-directory: dist
 
       - name: Create Tag for @ngneers/ng-httpclient-easy-network-stub
