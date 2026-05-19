@@ -32,6 +32,7 @@ The primary use case for this package is to create a mock server for your applic
 ## Built With 🔧
 
 - [TypeScript](https://www.typescriptlang.org/)
+- [Vitest](https://vitest.dev/)
 
 ## Usage Example 🚀
 

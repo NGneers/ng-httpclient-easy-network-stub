@@ -1,0 +1,13 @@
+allowBuilds:
+  '@parcel/watcher': false
+  easy-network-stub: false
+  esbuild: true
+  lmdb: false
+  msgpackr-extract: false
+  unrs-resolver: false
+
+minimumReleaseAge: 3000
+
+minimumReleaseAgeExclude:
+  - easy-network-stub@8.0.0
+  - '@ngneers/eslint-config@3.1.1'

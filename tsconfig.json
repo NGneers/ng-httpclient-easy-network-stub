@@ -2,7 +2,6 @@
   "extends": "./tsconfig.base.json",
   "exclude": ["lib", "test"],
   "compilerOptions": {
-    "types": ["jest"],
     "rootDir": "./src"
   }
 }

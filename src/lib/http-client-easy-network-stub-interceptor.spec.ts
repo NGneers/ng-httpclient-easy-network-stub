@@ -8,7 +8,8 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Request } from 'easy-network-stub';
-import { lastValueFrom, Observable, of } from 'rxjs';
+import { lastValueFrom, of } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
 
@@ -20,7 +21,7 @@ beforeEach(() => {
   interceptor = new HttpClientEasyNetworkStubInterceptor();
   nextHandlerResponse = new HttpResponse<any>({ status: 200, body: {} });
   nextHandlerMock = {
-    handle: jest.fn<Observable<HttpEvent<any>>, [HttpRequest<any>]>(() => of(nextHandlerResponse)),
+    handle: vi.fn((_request: HttpRequest<any>) => of(nextHandlerResponse)),
   } as unknown as HttpHandler;
 });
 
@@ -35,8 +36,8 @@ describe('intercept', () => {
   });
 
   it('calls next if registered handler matches the url but is disabled', async () => {
-    const handler = jest.fn();
-    const getIsEnabled = jest.fn(() => false);
+    const handler = vi.fn();
+    const getIsEnabled = vi.fn(() => false);
     interceptor.addHandler({ baseUrl: /\/api\//, handler, getIsEnabled });
     const request = new HttpRequest<any>('GET', '/api/contacts');
 
@@ -50,7 +51,7 @@ describe('intercept', () => {
   it('calls handler if registered handler matches the url', async () => {
     const reqBody = { test: 'Test123' };
     const headers = { 'content-type': 'application/json', 'X-Custom-Header': ['Test1', 'Test2'] };
-    const handler = jest.fn<Promise<void>, [Request]>(async r => {
+    const handler = vi.fn(async (r: Request) => {
       expect(r.method).toBe('POST');
       expect(r.body).toEqual(reqBody);
       expect(r.url).toBe('/api/contacts?test=123');
@@ -69,7 +70,7 @@ describe('intercept', () => {
   });
 
   it('calls next if no registered handler matches the url', async () => {
-    const handler = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
+    const handler = vi.fn(async (r: Request) => r.reply({ statusCode: 200 }));
     interceptor.addHandler({ baseUrl: /\/testing\//, handler });
     const request = new HttpRequest<any>('GET', '/api/contacts');
 
@@ -79,8 +80,8 @@ describe('intercept', () => {
   });
 
   it('calls only one handler if multiple registered handlers match the url', async () => {
-    const handler1 = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
-    const handler2 = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
+    const handler1 = vi.fn(async (r: Request) => r.reply({ statusCode: 200 }));
+    const handler2 = vi.fn(async (r: Request) => r.reply({ statusCode: 200 }));
     interceptor.addHandler({ baseUrl: /\/api\//, handler: handler1 });
     interceptor.addHandler({ baseUrl: /\/api\//, handler: handler2 });
     const request = new HttpRequest<any>('GET', '/api/contacts');
@@ -93,8 +94,8 @@ describe('intercept', () => {
   });
 
   it('calls first handler of registered handlers that matches the url', async () => {
-    const handler1 = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
-    const handler2 = jest.fn<Promise<void>, [Request]>(async r => r.reply({ statusCode: 200 }));
+    const handler1 = vi.fn(async (r: Request) => r.reply({ statusCode: 200 }));
+    const handler2 = vi.fn(async (r: Request) => r.reply({ statusCode: 200 }));
     interceptor.addHandler({ baseUrl: /\/testing\//, handler: handler1 });
     interceptor.addHandler({ baseUrl: /\/api\//, handler: handler2 });
     const request = new HttpRequest<any>('GET', '/api/contacts');
@@ -109,12 +110,14 @@ describe('intercept', () => {
 
 describe('handler call', () => {
   it('destory completes observable without value', async () => {
-    const handler = jest.fn<Promise<void>, [Request]>(async r => r.destroy());
+    const handler = vi.fn(async (r: Request) => r.destroy());
     interceptor.addHandler({ baseUrl: /\/api\//, handler });
     const request = new HttpRequest<any>('GET', '/api/contacts');
 
     await lastValueFrom(interceptor.intercept(request, nextHandlerMock))
-      .then(() => fail())
+      .then(() => {
+        throw new Error('Expected stubbed destroy to complete without a value');
+      })
       .catch(error => expect(error.name).toBe('EmptyError'));
   });
 
@@ -123,9 +126,7 @@ describe('handler call', () => {
     async statusCode => {
       const respBody = { test: 'Test123' };
       const headers = { 'content-type': 'application/json', 'X-Custom-Header': ['Test1', 'Test2'] };
-      const handler = jest.fn<Promise<void>, [Request]>(async r =>
-        r.reply({ statusCode, body: respBody, headers })
-      );
+      const handler = vi.fn(async (r: Request) => r.reply({ statusCode, body: respBody, headers }));
       interceptor.addHandler({ baseUrl: /\/api\//, handler });
       const request = new HttpRequest<any>('GET', '/api/contacts');
 
@@ -148,14 +149,14 @@ describe('handler call', () => {
     async statusCode => {
       const respBody = { test: 'Test123' };
       const headers = { 'content-type': 'application/json', 'X-Custom-Header': ['Test1', 'Test2'] };
-      const handler = jest.fn<Promise<void>, [Request]>(async r =>
-        r.reply({ statusCode, body: respBody, headers })
-      );
+      const handler = vi.fn(async (r: Request) => r.reply({ statusCode, body: respBody, headers }));
       interceptor.addHandler({ baseUrl: /\/api\//, handler });
       const request = new HttpRequest<any>('GET', '/api/contacts');
 
       await lastValueFrom(interceptor.intercept(request, nextHandlerMock))
-        .then(() => fail())
+        .then(() => {
+          throw new Error('Expected stubbed error response to reject');
+        })
         .catch(response => {
           expect(handler).toHaveBeenCalled();
           expect(response).toBeInstanceOf(HttpErrorResponse);

@@ -1,19 +1,18 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { HttpClientEasyNetworkStub } from './http-client-easy-network-stub';
-import {
-  HttpClientEasyNetworkStubInterceptor,
-  InterceptorHandler,
-} from './http-client-easy-network-stub-interceptor';
+import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
 
 describe('init', () => {
   it('adds a handler to the http interceptor', () => {
     const interceptor = new HttpClientEasyNetworkStubInterceptor();
-    const getIsEnabled = jest.fn();
+    const getIsEnabled = vi.fn();
     const stub = new HttpClientEasyNetworkStub(/\/api\//);
 
-    const interceptorSpy = jest.spyOn(interceptor, 'addHandler');
+    const interceptorSpy = vi.spyOn(interceptor, 'addHandler');
 
     stub.init(interceptor, getIsEnabled);
-    expect(interceptorSpy).toHaveBeenCalledWith<[InterceptorHandler]>({
+    expect(interceptorSpy).toHaveBeenCalledWith({
       baseUrl: /\/api\//,
       handler: expect.anything(),
       getIsEnabled,
