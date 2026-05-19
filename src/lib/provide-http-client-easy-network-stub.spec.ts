@@ -2,6 +2,7 @@ import { HTTP_INTERCEPTORS, HttpInterceptor } from '@angular/common/http';
 import { InjectionToken } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Request } from 'easy-network-stub';
+import { expect, it, vi } from 'vitest';
 
 import { HttpClientEasyNetworkStub } from './http-client-easy-network-stub';
 import { HttpClientEasyNetworkStubInterceptor } from './http-client-easy-network-stub-interceptor';
@@ -32,7 +33,7 @@ it('provideHttpClientEasyNetworkStub without injection token and stubFactory', (
 
 it('provideHttpClientEasyNetworkStub with getIsEnabled', () => {
   const urlMatch = /\/api\//;
-  const getIsEnabled = jest.fn();
+  const getIsEnabled = vi.fn();
 
   TestBed.configureTestingModule({
     providers: [provideHttpClientEasyNetworkStub({ urlMatch, getIsEnabled })],
@@ -68,13 +69,13 @@ it('provideHttpClientEasyNetworkStub with injection token', () => {
 
 it('provideHttpClientEasyNetworkStub with stub factory', () => {
   const urlMatch = /\/api\//;
-  const stubFactory = jest.fn<void, [HttpClientEasyNetworkStub]>();
+  const stubFactory = vi.fn<(stub: HttpClientEasyNetworkStub) => void>();
 
   TestBed.configureTestingModule({
     providers: [provideHttpClientEasyNetworkStub({ urlMatch, stubFactory })],
   });
 
-  expect(stubFactory).toHaveBeenCalledWith<[HttpClientEasyNetworkStub]>(expect.anything());
+  expect(stubFactory).toHaveBeenCalledWith(expect.anything());
 });
 
 it('multiple provideHttpClientEasyNetworkStub', () => {
@@ -82,8 +83,8 @@ it('multiple provideHttpClientEasyNetworkStub', () => {
   const urlMatch2 = /\/api\/v2\//;
   const injectionToken1 = new InjectionToken<HttpClientEasyNetworkStub>('v1');
   const injectionToken2 = new InjectionToken<HttpClientEasyNetworkStub>('v2');
-  const stubFactory1 = jest.fn<void, [HttpClientEasyNetworkStub]>();
-  const stubFactory2 = jest.fn<void, [HttpClientEasyNetworkStub]>();
+  const stubFactory1 = vi.fn<(stub: HttpClientEasyNetworkStub) => void>();
+  const stubFactory2 = vi.fn<(stub: HttpClientEasyNetworkStub) => void>();
 
   TestBed.configureTestingModule({
     providers: [
@@ -134,8 +135,8 @@ it('multiple stub configs', () => {
   const urlMatch2 = /\/api\/v2\//;
   const injectionToken1 = new InjectionToken<HttpClientEasyNetworkStub>('v1');
   const injectionToken2 = new InjectionToken<HttpClientEasyNetworkStub>('v2');
-  const stubFactory1 = jest.fn<void, [HttpClientEasyNetworkStub]>();
-  const stubFactory2 = jest.fn<void, [HttpClientEasyNetworkStub]>();
+  const stubFactory1 = vi.fn<(stub: HttpClientEasyNetworkStub) => void>();
+  const stubFactory2 = vi.fn<(stub: HttpClientEasyNetworkStub) => void>();
 
   TestBed.configureTestingModule({
     providers: [

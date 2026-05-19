@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2024",
     "module": "ES2022",
-    "baseUrl": "./",
-    "lib": ["ES2022"],
+    "lib": ["ES2024"],
     "declaration": true,
     "outDir": "lib",
     "rootDir": ".",
@@ -14,7 +13,6 @@
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "moduleResolution": "node",
     "skipLibCheck": true,
     "newLine": "lf"
   },

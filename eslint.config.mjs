@@ -1,22 +1,17 @@
-import { defineConfig } from 'eslint/config';
 import ngneers from '@ngneers/eslint-config-angular';
-import globals from 'globals';
 
-export default defineConfig([
-  ngneers.configs.angular,
+export default [
   {
+    ignores: ['test/**/*', 'eslint.config.mjs'],
+  },
+  ...ngneers.configs.angular,
+  {
+    files: ['**/*.ts'],
     languageOptions: {
       parserOptions: {
-        project: './tsconfig.json',
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
-  {
-    files: ['**/*.spec.ts', '**/*.test.ts', '**/test/**/*.ts'],
-    languageOptions: {
-      globals: {
-        fail: 'readonly',
-      },
-    },
-  },
-]);
+];
