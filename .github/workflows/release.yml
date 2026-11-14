@@ -1,0 +1,85 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      minor:
+        description: Minor release (bumps minor instead of patch)
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+    steps:
+      # A GitHub App token is used so the release PR and its merge trigger
+      # the Build workflow (GITHUB_TOKEN events don't trigger workflows).
+      - name: Create app token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # The package major always matches the Angular major. If Angular is ahead,
+      # jump to <angular major>.0.0; otherwise bump minor or patch.
+      - name: Bump version
+        id: version
+        env:
+          MINOR: ${{ inputs.minor }}
+        run: |
+          node <<'JS'
+          const fs = require("fs");
+          const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+          const range = pkg.devDependencies?.["@angular/core"] ?? pkg.peerDependencies?.["@angular/core"];
+          if (!range) throw new Error("No @angular/core found in devDependencies or peerDependencies");
+          const lowerBounds = range.replace(/<=?\s*[\d.]+/g, "");
+          const angularMajor = Math.max(...[...lowerBounds.matchAll(/(?:^|[^.\d])(\d+)/g)].map((m) => Number(m[1])));
+          const [major, minor, patch] = pkg.version.split(/[.-]/).map(Number);
+          let next;
+          if (major < angularMajor) next = `${angularMajor}.0.0`;
+          else if (process.env.MINOR === "true") next = `${major}.${minor + 1}.0`;
+          else next = `${major}.${minor}.${patch + 1}`;
+          console.log(`Angular ${angularMajor} (${range}): ${pkg.version} -> ${next}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=v${next}\nbranch=release/v${next}\n`);
+          JS
+
+      - name: Apply version
+        run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version
+
+      - name: Create release PR with auto-merge
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
+          git switch -c "${{ steps.version.outputs.branch }}"
+          git commit -am "chore: release ${{ steps.version.outputs.version }}"
+          git push -u origin "${{ steps.version.outputs.branch }}"
+          url=$(gh pr create \
+            --base main \
+            --head "${{ steps.version.outputs.branch }}" \
+            --title "chore: release ${{ steps.version.outputs.version }}" \
+            --body "Automated release, triggered by @${{ github.actor }}.")
+          gh pr merge "$url" --auto --squash
+          echo "Release PR: $url" >> "$GITHUB_STEP_SUMMARY"
