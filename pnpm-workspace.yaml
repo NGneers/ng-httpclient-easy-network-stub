@@ -6,7 +6,7 @@ allowBuilds:
   msgpackr-extract: false
   unrs-resolver: false
 
-minimumReleaseAge: 3000
+minimumReleaseAge: 2880
 
 minimumReleaseAgeExclude:
   - easy-network-stub@8.0.0
