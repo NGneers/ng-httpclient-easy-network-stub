@@ -21,7 +21,7 @@
   },
   "prettier": "@ngneers/prettier-config",
   "dependencies": {
-    "easy-network-stub": "^8.0.0",
+    "easy-network-stub": "^9.0.0",
     "tslib": "^2.9.1"
   },
   "peerDependencies": {
