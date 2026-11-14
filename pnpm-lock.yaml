@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       easy-network-stub:
-        specifier: ^8.0.0
-        version: 8.0.0
+        specifier: ^9.0.0
+        version: 9.0.0
       rxjs:
         specifier: '7'
         version: 7.8.2
@@ -2109,8 +2109,8 @@ packages:
       oxc-resolver:
         optional: true
 
-  easy-network-stub@8.0.0:
-    resolution: {integrity: sha512-B2PX0kMEXlYfCPo5WWmc41xGKnlh1eClXrrXpVDP791J8sRNpKqwDuNRCjrs0pxFJvlH1nzYzW3c2Iev4rIVww==}
+  easy-network-stub@9.0.0:
+    resolution: {integrity: sha512-SioLUFEa/VYLXCeAY7XFEJRarxawtDpoX49lAYwIiN5e6GHaIEOjztwc9/SseYHIyCzqU03nkM/CODZiyphfpw==}
     peerDependencies:
       ws: ^8.16.0
     peerDependenciesMeta:
@@ -5292,7 +5292,7 @@ snapshots:
 
   dts-resolver@3.0.0: {}
 
-  easy-network-stub@8.0.0: {}
+  easy-network-stub@9.0.0: {}
 
   electron-to-chromium@1.5.483: {}
 
