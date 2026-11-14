@@ -20,17 +20,24 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 10
     if: github.ref == 'refs/heads/main'
     permissions:
-      contents: write
-      pull-requests: write
-      actions: write
-    env:
-      GH_TOKEN: ${{ github.token }}
+      contents: read
     steps:
+      # A GitHub App token is used so the release PR and its merge trigger
+      # the Build workflow (GITHUB_TOKEN events don't trigger workflows).
+      - name: Create app token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -44,11 +51,14 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "branch=release/$version" >> "$GITHUB_OUTPUT"
 
-      - name: Create release PR
-        id: pr
+      - name: Create release PR with auto-merge
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
           git switch -c "${{ steps.version.outputs.branch }}"
           git commit -am "chore: release ${{ steps.version.outputs.version }}"
           git push -u origin "${{ steps.version.outputs.branch }}"
@@ -57,27 +67,5 @@ jobs:
             --head "${{ steps.version.outputs.branch }}" \
             --title "chore: release ${{ steps.version.outputs.version }}" \
             --body "Automated ${{ inputs.bump }} release, triggered by @${{ github.actor }}.")
-          echo "url=$url" >> "$GITHUB_OUTPUT"
           gh pr merge "$url" --auto --squash
-
-      # Pushes and PRs made with GITHUB_TOKEN do not trigger other workflows,
-      # so run the required Build check on the release branch explicitly.
-      - name: Run Build on release branch
-        run: gh workflow run build.yml --ref "${{ steps.version.outputs.branch }}"
-
-      - name: Wait for merge
-        run: |
-          for i in $(seq 1 80); do
-            state=$(gh pr view "${{ steps.pr.outputs.url }}" --json state --jq .state)
-            echo "PR state: $state"
-            [ "$state" = MERGED ] && exit 0
-            [ "$state" = CLOSED ] && { echo "::error::Release PR was closed without merging"; exit 1; }
-            sleep 30
-          done
-          echo "::error::Release PR was not merged in time: ${{ steps.pr.outputs.url }}"
-          exit 1
-
-      # The auto-merge push is also attributed to GITHUB_TOKEN and won't trigger
-      # Build on main, so dispatch it to run the Publish job.
-      - name: Run Build & Publish on main
-        run: gh workflow run build.yml --ref main
+          echo "Release PR: $url" >> "$GITHUB_STEP_SUMMARY"
