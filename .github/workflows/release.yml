@@ -2,15 +2,10 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      bump:
-        description: Version bump
-        type: choice
-        required: true
-        default: patch
-        options:
-          - patch
-          - minor
-          - major
+      minor:
+        description: Minor release (bumps minor instead of patch)
+        type: boolean
+        default: false
 
 concurrency:
   group: release
@@ -44,12 +39,31 @@ jobs:
         with:
           node-version: 24
 
+      # The package major always matches the Angular major. If Angular is ahead,
+      # jump to <angular major>.0.0; otherwise bump minor or patch.
       - name: Bump version
         id: version
+        env:
+          MINOR: ${{ inputs.minor }}
         run: |
-          version=$(npm version "${{ inputs.bump }}" --no-git-tag-version)
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "branch=release/$version" >> "$GITHUB_OUTPUT"
+          node <<'JS'
+          const fs = require("fs");
+          const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+          const range = pkg.devDependencies?.["@angular/core"] ?? pkg.peerDependencies?.["@angular/core"];
+          if (!range) throw new Error("No @angular/core found in devDependencies or peerDependencies");
+          const lowerBounds = range.replace(/<=?\s*[\d.]+/g, "");
+          const angularMajor = Math.max(...[...lowerBounds.matchAll(/(?:^|[^.\d])(\d+)/g)].map((m) => Number(m[1])));
+          const [major, minor, patch] = pkg.version.split(/[.-]/).map(Number);
+          let next;
+          if (major < angularMajor) next = `${angularMajor}.0.0`;
+          else if (process.env.MINOR === "true") next = `${major}.${minor + 1}.0`;
+          else next = `${major}.${minor}.${patch + 1}`;
+          console.log(`Angular ${angularMajor} (${range}): ${pkg.version} -> ${next}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=v${next}\nbranch=release/v${next}\n`);
+          JS
+
+      - name: Apply version
+        run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version
 
       - name: Create release PR with auto-merge
         env:
@@ -66,6 +80,6 @@ jobs:
             --base main \
             --head "${{ steps.version.outputs.branch }}" \
             --title "chore: release ${{ steps.version.outputs.version }}" \
-            --body "Automated ${{ inputs.bump }} release, triggered by @${{ github.actor }}.")
+            --body "Automated release, triggered by @${{ github.actor }}.")
           gh pr merge "$url" --auto --squash
           echo "Release PR: $url" >> "$GITHUB_STEP_SUMMARY"
